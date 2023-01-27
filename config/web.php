@@ -5,14 +5,15 @@ use yii\web\Request;
 $params = require __DIR__ . '/params.php';
 $db = require __DIR__ . '/db.php';
 $baseUrl = str_replace('/web', '', (new Request)->getBaseUrl());
-$config = [
-    'id' => 'basic',
-    'basePath' => dirname(__DIR__),
 
+$config = [
+    'id' => 'projectUA',
+    'name' => 'projectUA',
+    'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
     'aliases' => [
         '@bower' => '@vendor/bower-asset',
-        '@npm'   => '@vendor/npm-asset',
+        '@npm' => '@vendor/npm-asset',
     ],
     'components' => [
         'urlManager' => [
@@ -21,7 +22,7 @@ $config = [
             'showScriptName' => false,
             'rules' => [
                 '' => 'site/tenders',
-                '<action>' => 'site/<action>',
+                '<action>' => 'site/<action>'
             ],
         ],
         'request' => [

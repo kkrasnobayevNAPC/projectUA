@@ -3,19 +3,20 @@
 namespace app\controllers;
 
 use Yii;
+use yii\base\ErrorException;
+use yii\base\UserException;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\Response;
 use yii\filters\VerbFilter;
 use app\models\LoginForm;
-use app\models\ContactForm;
 
 class SiteController extends Controller
 {
     /**
      * {@inheritdoc}
      */
-    public function behaviors()
+    public function behaviors(): array
     {
 
         return [
@@ -43,7 +44,7 @@ class SiteController extends Controller
     /**
      * {@inheritdoc}
      */
-    public function actions()
+    public function actions(): array
     {
 
         return [
@@ -88,20 +89,21 @@ class SiteController extends Controller
      *
      * @return Response
      */
-    public function actionLogout()
+    public function actionLogout(): Response
     {
+
         Yii::$app->user->logout();
 
         return $this->goHome();
+
     }
 
     /**
      * @return string
      */
-    public function actionTenders()
+    public function actionTenders(): string
     {
         return $this->render('tenders', []);
-
     }
 
 }

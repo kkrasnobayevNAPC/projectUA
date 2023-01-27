@@ -5,4 +5,5 @@ IndexIgnore */*
 # follow symbolic links
 Options FollowSymlinks
 RewriteEngine on
+
 RewriteRule ^(.+)?$ web/$1 [L,PT]
