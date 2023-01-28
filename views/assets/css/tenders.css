@@ -1,0 +1,33 @@
+.pagination li {
+    height: 30px;
+    min-width: 30px;
+    background-color: var(--bs-border-color);
+    margin: 0 1px;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.pagination li:first-child {
+    margin-left: 0;
+}
+
+.pagination li:last-child {
+    margin-right: 0;
+}
+
+.pagination li a {
+    text-decoration: none;
+    color: #fff
+}
+
+.pagination li.active a,
+.pagination li span {
+    color: grey;
+    pointer-events: none;
+}
+
+.tender-amount {
+    text-align: right;
+}

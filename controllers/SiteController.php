@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\models\TenderSearch;
 use Yii;
 use yii\base\ErrorException;
 use yii\base\UserException;
@@ -103,7 +104,14 @@ class SiteController extends Controller
      */
     public function actionTenders(): string
     {
-        return $this->render('tenders', []);
+
+        $searchModel = new TenderSearch();
+
+        return $this->render('tenders', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $searchModel->search(Yii::$app->request->queryParams)
+        ]);
+
     }
 
 }
