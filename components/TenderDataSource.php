@@ -2,15 +2,16 @@
 
 namespace app\components;
 
-use app\helpers\ConsoleHelper;
-use stdClass;
-use yii\console\Exception;
+use app\helpers\TenderConsoleLogHelper;
+use app\helpers\ConsoleOutputHelper;
+use Exception;
 use linslin\yii2\curl;
+use yii\helpers\BaseConsole;
 
 class TenderDataSource implements DataSourceInterface
 {
 
-    private const LIST_URL = 'https://public.api.openprocurement.org/api/2.5/tenders?descending=1';
+    private const LIST_URL = 'https://public.api.openprocurement.org/api/2.5/tenders?descending=1&limit=5';
     private const ITEM_URL = 'https://public.api.openprocurement.org/api/0/tenders/';
     private const MAX_PAGES = 10;
 
@@ -29,16 +30,18 @@ class TenderDataSource implements DataSourceInterface
     public function getAll(): ?array
     {
 
-        ConsoleHelper::newLine();
+        ConsoleOutputHelper::newLine();
 
         /**
          * if we already received all pages - return;
          */
         if ($this->pagesReceived === self::MAX_PAGES) {
 
-            ConsoleHelper::line("No more tenders available", true);
+            TenderConsoleLogHelper::info('No more tenders available. Bye!');
 
-            ConsoleHelper::newLine();
+            ConsoleOutputHelper::line('No more tenders available', [BaseConsole::BOLD]);
+
+            ConsoleOutputHelper::newLine();
 
             return null;
 
@@ -46,25 +49,31 @@ class TenderDataSource implements DataSourceInterface
 
         $this->pagesReceived++;
 
-        ConsoleHelper::line("Getting tenders from \"$this->url\"", true);
+        TenderConsoleLogHelper::info("Getting tenders from \"$this->url\"");
+
+        ConsoleOutputHelper::line("Getting tenders from \"$this->url\"", [BaseConsole::BOLD]);
 
         /**
          * get batch of tenders
          */
         $tenders = $this->getDataFromApi($this->url);
 
+        $tendersCount = count($tenders['data']);
+
         /**
          * if we have tenders - switch url to the next page and return tenders;
          * otherwise we have no more tenders available
          */
-        if (isset($tenders->data) && count($tenders->data)) {
+        if ($tendersCount) {
+
+            TenderConsoleLogHelper::info("$tendersCount tenders found");
 
             /**
              * update url to get next batch of tenders
              */
-            $this->url = $tenders->next_page->uri;
+            $this->url = $tenders['next_page']['uri'];
 
-            return $tenders->data;
+            return $tenders['data'];
 
         } else {
             $this->pagesReceived = static::MAX_PAGES;
@@ -76,53 +85,65 @@ class TenderDataSource implements DataSourceInterface
 
     /**
      * @param string $id
-     * @return stdClass
+     * @return array
      * @throws Exception
      */
-    public function getOne(string $id): stdClass
+    public function getOne(string $id): array
     {
 
-        $tenderData = $this->getDataFromApi(self::ITEM_URL . $id);
+        TenderConsoleLogHelper::info("Tender \"$id\" - obtaining data");
 
-        if (isset($tenderData->data)) return $tenderData->data;
-
-        throw new Exception("Could not get tender info." .
-            (isset($tenderData->errors) ? PHP_EOL . json_encode($tenderData->errors) : ''));
+        return $this->getDataFromApi(self::ITEM_URL . $id)['data'];
 
     }
 
     /**
      * @param string $url
-     * @return stdClass
+     * @return array
      * @throws Exception
      */
-    private function getDataFromApi(string $url): stdClass
+    private function getDataFromApi(string $url): array
     {
 
         $curl = new curl\Curl();
 
-        try {
-            $response = $curl->get($url);
-        } catch (\Exception $ex) {
-            throw new Exception($ex->getMessage(), $ex->getCode(), $ex);
-        }
+        /**
+         * perform curl request
+         */
+        $response = $curl->get($url);
 
+        /**
+         * if we have errorCode - throw exception
+         */
         if ($curl->errorCode) {
-            throw new Exception("Error getting data from \"$url\". $curl->errorText", $curl->errorCode);
+            throw new Exception("Error connecting to \"$url\". $curl->errorText", $curl->errorCode);
         }
 
+        /**
+         * if response code is 200 - try decoding the data and returning it;
+         * otherwise throw exception
+         */
         switch ($curl->responseCode) {
 
             case 200:
 
-                if ($data = json_decode($response)) {
+                if ($data = json_decode($response, true)) {
+
+                    TenderConsoleLogHelper::debug($data);
+
                     return $data;
+
                 }
 
-                throw new Exception('Invalid json provided in response');
+                TenderConsoleLogHelper::debug("Failed response:\n$response");
+
+                throw new Exception("Invalid json provided in response");
 
             default:
-                throw new Exception("Error getting data from \"$url\". $curl->errorText", $curl->responseCode);
+
+                TenderConsoleLogHelper::debug("Failed response:\n$response");
+
+                throw new Exception("Response failed with code $curl->responseCode");
 
         }
 

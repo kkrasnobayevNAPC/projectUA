@@ -2,9 +2,10 @@
 
 namespace app\helpers;
 
+use Yii;
 use yii\helpers\BaseConsole;
 
-class ConsoleHelper
+class ConsoleOutputHelper
 {
 
     public static function newLine()
@@ -23,13 +24,11 @@ class ConsoleHelper
 
     /**
      * @param string $string
-     * @param bool $bold
+     * @param array $args
      * @return void
      */
-    public static function line(string $string, bool $bold = false)
+    public static function line(string $string, array $args = [])
     {
-
-        $args = $bold ? [BaseConsole::BOLD] : [];
 
         $string = BaseConsole::ansiFormat($string, $args);
 

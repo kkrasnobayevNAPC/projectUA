@@ -8,7 +8,7 @@ interface DataSourceInterface
 {
 
     /**
-     * @return stdClass[]|null
+     * @return array|null
      */
     public function getAll(): ?array;
 
@@ -16,6 +16,6 @@ interface DataSourceInterface
      * @param string $id
      * @return array
      */
-    public function getOne(string $id): stdClass;
+    public function getOne(string $id): array;
 
 }

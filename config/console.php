@@ -1,5 +1,7 @@
 <?php
 
+use yii\log\Logger;
+
 $params = require __DIR__ . '/params.php';
 $db = require __DIR__ . '/db.php';
 
@@ -10,7 +12,7 @@ $config = [
     'controllerNamespace' => 'app\commands',
     'aliases' => [
         '@bower' => '@vendor/bower-asset',
-        '@npm'   => '@vendor/npm-asset',
+        '@npm' => '@vendor/npm-asset',
         '@tests' => '@app/tests',
     ],
     'components' => [
@@ -18,11 +20,25 @@ $config = [
             'class' => 'yii\caching\FileCache',
         ],
         'log' => [
+            'flushInterval' => 1,
             'targets' => [
                 [
                     'class' => 'yii\log\FileTarget',
                     'levels' => ['error', 'warning'],
+                    'except' => ['tenders']
                 ],
+                [
+                    'class' => 'yii\log\FileTarget',
+                    'levels' => !YII_DEBUG ? ['error', 'warning', 'info', 'trace'] :
+                        ['error', 'warning', 'info'],
+                    'logFile' => '@app/runtime/logs/tenders.log',
+                    'categories' => ['tenders'],
+                    'exportInterval' => 1,
+                    'logVars' => [],
+                    'prefix' => function () {
+                        return '';
+                    }
+                ]
             ],
         ],
         'db' => $db,
@@ -38,6 +54,7 @@ $config = [
 ];
 
 if (YII_ENV_DEV) {
+
     // configuration adjustments for 'dev' environment
     $config['bootstrap'][] = 'gii';
     $config['modules']['gii'] = [
@@ -51,6 +68,7 @@ if (YII_ENV_DEV) {
         // uncomment the following to add your IP if you are not connecting from localhost.
         //'allowedIPs' => ['127.0.0.1', '::1'],
     ];
+
 }
 
 return $config;

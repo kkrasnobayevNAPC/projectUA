@@ -2,9 +2,10 @@
 
 namespace app\components;
 
-use app\helpers\ConsoleHelper;
+use app\helpers\TenderConsoleLogHelper;
+use app\helpers\ConsoleOutputHelper;
 use app\models\Tender;
-use yii\console\Exception;
+use Exception;
 
 class TenderImporter
 {
@@ -52,38 +53,44 @@ class TenderImporter
 
         $index = 1;
 
-        if ($count) ConsoleHelper::newLine();
+        if ($count) ConsoleOutputHelper::newLine();
 
         /**
          * loop through tenders
          */
         foreach ($rawTenders as $rawTender) {
 
-            ConsoleHelper::sameLine("Processing tender $index out of $count");
+            ConsoleOutputHelper::sameLine("Processing tender $index out of $count");
 
             /**
              * get tender details from api
              */
-            $tenderData = $this->dataSource->getOne($rawTender->id);
+            $tenderData = $this->dataSource->getOne($rawTender['id']);
 
             /**
              * prepare tender model
              */
             $tender = new Tender();
 
-            $tender->tenderId = $tenderData->id;
-            $tender->description = $tenderData->title;
-            $tender->amount = (double)$tenderData->value->amount;
-            $tender->dateModified = $tenderData->dateModified;
+            $tender->tenderId = $tenderData['id'];
+            $tender->description = $tenderData['title'];
+            $tender->amount = (double)$tenderData['value']['amount'];
+            $tender->dateModified = $tenderData['dateModified'];
+
+            TenderConsoleLogHelper::info("Tender \"$tender->tenderId\" - saving to database");
 
             /**
              * if we could not save tender to db - throw exception
              */
             if (!$tender->save()) {
 
-                ConsoleHelper::newLine();
+                TenderConsoleLogHelper::info($tender->getAttributes());
 
-                throw new Exception("Could not save tender into db." . PHP_EOL . json_encode($tender->getErrors()));
+                TenderConsoleLogHelper::info($tender->getErrors());
+
+                ConsoleOutputHelper::newLine();
+
+                throw new Exception("Could not save tender into db");
 
             }
 
