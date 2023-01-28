@@ -29,8 +29,7 @@ $config = [
                 ],
                 [
                     'class' => 'yii\log\FileTarget',
-                    'levels' => !YII_DEBUG ? ['error', 'warning', 'info', 'trace'] :
-                        ['error', 'warning', 'info'],
+                    'levels' => ['error', 'warning', 'info'],
                     'logFile' => '@app/runtime/logs/tenders.log',
                     'categories' => ['tenders'],
                     'exportInterval' => 1,

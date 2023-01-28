@@ -37,9 +37,9 @@ class TenderDataSource implements DataSourceInterface
          */
         if ($this->pagesReceived === self::MAX_PAGES) {
 
-            TenderConsoleLogHelper::info('No more tenders available. Bye!');
+            TenderConsoleLogHelper::info('No more tenders available. Done!');
 
-            ConsoleOutputHelper::line('No more tenders available', [BaseConsole::BOLD]);
+            ConsoleOutputHelper::line('No more tenders available. Done!', [BaseConsole::BOLD]);
 
             ConsoleOutputHelper::newLine();
 
