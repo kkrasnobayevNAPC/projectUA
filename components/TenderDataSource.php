@@ -37,7 +37,7 @@ class TenderDataSource implements DataSourceInterface
      * @param int $perPage
      * @throws Exception
      */
-    public function __construct(int $pages = 10, int $perPage = 20)
+    public function __construct(int $pages = 10, int $perPage = 50)
     {
 
         $this->url = self::LIST_URL;
