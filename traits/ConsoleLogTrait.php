@@ -1,18 +1,15 @@
 <?php
-
-namespace app\helpers;
+namespace app\traits;
 
 use Yii;
-use yii\helpers\BaseConsole;
 
-class TenderConsoleLogHelper
-{
+trait ConsoleLogTrait {
 
     /**
      * @param string|array $message
      * @return void
      */
-    public static function info($message)
+    private static function info($message)
     {
         Yii::info($message, 'tenders');
     }
@@ -21,7 +18,7 @@ class TenderConsoleLogHelper
      * @param string|array $message
      * @return void
      */
-    public static function debug($message)
+    private static function debug($message)
     {
         Yii::debug($message, 'tenders');
     }
@@ -30,10 +27,9 @@ class TenderConsoleLogHelper
      * @param string|array $message
      * @return void
      */
-    public static function error($message)
+    private static function error($message)
     {
         Yii::error($message, 'tenders');
     }
-
 
 }

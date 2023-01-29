@@ -2,13 +2,16 @@
 
 namespace app\components;
 
-use app\helpers\TenderConsoleLogHelper;
-use app\helpers\ConsoleOutputHelper;
 use app\models\Tender;
+use app\traits\ConsoleLogTrait;
+use app\traits\ConsoleOutputTrait;
 use Exception;
 
 class TenderImporter
 {
+
+    use ConsoleLogTrait;
+    use ConsoleOutputTrait;
 
     /**
      * @var DataSourceInterface
@@ -53,14 +56,14 @@ class TenderImporter
 
         $index = 1;
 
-        if ($count) ConsoleOutputHelper::newLine();
+        if ($count) self::newLine();
 
         /**
          * loop through tenders
          */
         foreach ($rawTenders as $rawTender) {
 
-            ConsoleOutputHelper::sameLine("Processing tender $index out of $count");
+            self::sameLine("Processing tender $index out of $count");
 
             /**
              * get tender details from api
@@ -77,18 +80,18 @@ class TenderImporter
             $tender->amount = (double)$tenderData['value']['amount'];
             $tender->dateModified = $tenderData['dateModified'];
 
-            TenderConsoleLogHelper::info("Tender \"$tender->tenderId\" - saving to database");
+            self::info("Tender \"$tender->tenderId\" - saving to database");
 
             /**
              * if we could not save tender to db - throw exception
              */
             if (!$tender->save()) {
 
-                TenderConsoleLogHelper::info($tender->getAttributes());
+                self::info($tender->getAttributes());
 
-                TenderConsoleLogHelper::info($tender->getErrors());
+                self::info($tender->getErrors());
 
-                ConsoleOutputHelper::newLine();
+                self::newLine();
 
                 throw new Exception("Could not save tender into db");
 

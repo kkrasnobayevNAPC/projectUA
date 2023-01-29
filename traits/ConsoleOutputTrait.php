@@ -1,14 +1,12 @@
 <?php
 
-namespace app\helpers;
+namespace app\traits;
 
-use Yii;
 use yii\helpers\BaseConsole;
 
-class ConsoleOutputHelper
-{
+trait ConsoleOutputTrait {
 
-    public static function newLine()
+    private static function newLine()
     {
         self::line(PHP_EOL);
     }
@@ -17,7 +15,7 @@ class ConsoleOutputHelper
      * @param string $string
      * @return void
      */
-    public static function sameLine(string $string)
+    private static function sameLine(string $string)
     {
         self::line("\r$string");
     }
@@ -27,7 +25,7 @@ class ConsoleOutputHelper
      * @param array $args
      * @return void
      */
-    public static function line(string $string, array $args = [])
+    private static function line(string $string, array $args = [])
     {
 
         $string = BaseConsole::ansiFormat($string, $args);

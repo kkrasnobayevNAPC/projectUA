@@ -4,8 +4,8 @@ namespace app\commands;
 
 use app\components\TenderDataSource;
 use app\components\TenderImporter;
-use app\helpers\TenderConsoleLogHelper;
-use app\helpers\ConsoleOutputHelper;
+use app\traits\ConsoleLogTrait;
+use app\traits\ConsoleOutputTrait;
 use Throwable;
 use Yii;
 use yii\console\Controller;
@@ -14,6 +14,9 @@ use yii\helpers\BaseConsole;
 
 class TenderController extends Controller
 {
+
+    use ConsoleLogTrait;
+    use ConsoleOutputTrait;
 
     /**
      * @var bool whether to save full tenders data in to tenders.log
@@ -63,19 +66,19 @@ class TenderController extends Controller
 
             $errorString = get_class($exception) . ": {$exception->getMessage()} in {$exception->getFile()}:{$exception->getLine()}";
 
-            TenderConsoleLogHelper::error($errorString);
+            self::error($errorString);
 
             $stackTrace = 'Stack trace:' . PHP_EOL . $exception->getTraceAsString();
 
-            TenderConsoleLogHelper::error($stackTrace);
+            self::error($stackTrace);
 
-            ConsoleOutputHelper::line("SOMETHING WENT WRONG: $errorString", [BaseConsole::FG_RED]);
+            self::line("SOMETHING WENT WRONG: $errorString", [BaseConsole::FG_RED]);
 
-            ConsoleOutputHelper::newLine();
+            self::newLine();
 
-            ConsoleOutputHelper::line($stackTrace);
+            self::line($stackTrace);
 
-            ConsoleOutputHelper::newLine();
+            self::newLine();
 
             return ExitCode::UNSPECIFIED_ERROR;
 

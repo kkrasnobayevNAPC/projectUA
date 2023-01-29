@@ -12,6 +12,7 @@ use yii\db\ActiveRecord;
  * @property string $description
  * @property float $amount
  * @property string $dateModified
+ * @property string $shit
  *
  */
 class Tender extends ActiveRecord
@@ -25,9 +26,9 @@ class Tender extends ActiveRecord
 
         return [
             [['tenderId', 'description', 'amount', 'dateModified'], 'required'],
-            [['tenderId'], 'string', 'max' => 32],
+            [['tenderId'], 'string', 'max' => 32, 'min' => 32],
             [['description'], 'string', 'max' => 10000],
-            [['amount'], 'number']
+            [['amount'], 'number', 'min' => 0]
         ];
 
     }

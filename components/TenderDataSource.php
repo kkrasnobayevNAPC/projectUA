@@ -2,25 +2,58 @@
 
 namespace app\components;
 
-use app\helpers\TenderConsoleLogHelper;
-use app\helpers\ConsoleOutputHelper;
+use app\traits\ConsoleOutputTrait;
 use Exception;
 use linslin\yii2\curl;
 use yii\helpers\BaseConsole;
+use app\traits\ConsoleLogTrait;
 
 class TenderDataSource implements DataSourceInterface
 {
 
-    private const LIST_URL = 'https://public.api.openprocurement.org/api/2.5/tenders?descending=1&limit=5';
-    private const ITEM_URL = 'https://public.api.openprocurement.org/api/0/tenders/';
-    private const MAX_PAGES = 10;
+    use ConsoleLogTrait;
+    use ConsoleOutputTrait;
 
+    private const LIST_URL = 'https://public.api.openprocurement.org/api/2.5/tenders?descending=1';
+    private const ITEM_URL = 'https://public.api.openprocurement.org/api/0/tenders/';
+
+    /**
+     * @var string $url
+     */
     private $url;
+
+    /**
+     * @var int $pages
+     */
+    private $pages;
+
+    /**
+     * @var int $pagesReceived
+     */
     private $pagesReceived = 0;
 
-    public function __construct()
+    /**
+     * @param int $pages
+     * @param int $perPage
+     * @throws Exception
+     */
+    public function __construct(int $pages = 10, int $perPage = 20)
     {
+
         $this->url = self::LIST_URL;
+
+        if ($pages < 1) {
+            throw new Exception('$pages value must be more than 0');
+        }
+
+        $this->pages = $pages;
+
+        if ($perPage < 1) {
+            throw new Exception('$perPage value must be more than 0');
+        }
+
+        $this->url .= "&limit=$perPage";
+
     }
 
     /**
@@ -30,18 +63,18 @@ class TenderDataSource implements DataSourceInterface
     public function getAll(): ?array
     {
 
-        ConsoleOutputHelper::newLine();
+        self::newLine();
 
         /**
          * if we already received all pages - return;
          */
-        if ($this->pagesReceived === self::MAX_PAGES) {
+        if ($this->pagesReceived === $this->pages) {
 
-            TenderConsoleLogHelper::info('No more tenders available. Done!');
+            self::info('No more tenders available. Done!');
 
-            ConsoleOutputHelper::line('No more tenders available. Done!', [BaseConsole::BOLD]);
+            self::line('No more tenders available. Done!', [BaseConsole::BOLD]);
 
-            ConsoleOutputHelper::newLine();
+            self::newLine();
 
             return null;
 
@@ -49,9 +82,9 @@ class TenderDataSource implements DataSourceInterface
 
         $this->pagesReceived++;
 
-        TenderConsoleLogHelper::info("Getting tenders from \"$this->url\"");
+        self::info("Getting tenders from \"$this->url\"");
 
-        ConsoleOutputHelper::line("Getting tenders from \"$this->url\"", [BaseConsole::BOLD]);
+        self::line("Getting tenders from \"$this->url\"", [BaseConsole::BOLD]);
 
         /**
          * get batch of tenders
@@ -66,7 +99,7 @@ class TenderDataSource implements DataSourceInterface
          */
         if ($tendersCount) {
 
-            TenderConsoleLogHelper::info("$tendersCount tenders found");
+            self::info("$tendersCount tenders found");
 
             /**
              * update url to get next batch of tenders
@@ -76,7 +109,7 @@ class TenderDataSource implements DataSourceInterface
             return $tenders['data'];
 
         } else {
-            $this->pagesReceived = static::MAX_PAGES;
+            $this->pagesReceived = $this->pages;
         }
 
         return null;
@@ -91,7 +124,7 @@ class TenderDataSource implements DataSourceInterface
     public function getOne(string $id): array
     {
 
-        TenderConsoleLogHelper::info("Tender \"$id\" - obtaining data");
+        self::info("Tender \"$id\" - obtaining data");
 
         return $this->getDataFromApi(self::ITEM_URL . $id)['data'];
 
@@ -102,7 +135,7 @@ class TenderDataSource implements DataSourceInterface
      * @return array
      * @throws Exception
      */
-    private function getDataFromApi(string $url): array
+    protected function getDataFromApi(string $url): array
     {
 
         $curl = new curl\Curl();
@@ -129,19 +162,19 @@ class TenderDataSource implements DataSourceInterface
 
                 if ($data = json_decode($response, true)) {
 
-                    TenderConsoleLogHelper::debug($data);
+                    self::debug($data);
 
                     return $data;
 
                 }
 
-                TenderConsoleLogHelper::debug("Failed response:\n$response");
+                self::debug("Failed response:\n$response");
 
                 throw new Exception("Invalid json provided in response");
 
             default:
 
-                TenderConsoleLogHelper::debug("Failed response:\n$response");
+                self::debug("Failed response:\n$response");
 
                 throw new Exception("Response failed with code $curl->responseCode");
 

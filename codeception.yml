@@ -12,7 +12,12 @@ modules:
     config:
         Yii2:
             configFile: 'config/test.php'
-
+coverage:
+    enabled: true
+    include:
+        - models/*
+        - components/*
+        - traits/*
 # To enable code coverage:
 #coverage:
 #    #c3_url: http://localhost:8080/index-test.php/
