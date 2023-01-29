@@ -2,8 +2,6 @@
 
 namespace app\components;
 
-use stdClass;
-
 interface DataSourceInterface
 {
 

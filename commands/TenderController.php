@@ -64,14 +64,29 @@ class TenderController extends Controller
 
         } catch (Throwable $exception) {
 
+            /**
+             * prepare error line
+             */
             $errorString = get_class($exception) . ": {$exception->getMessage()} in {$exception->getFile()}:{$exception->getLine()}";
 
+            /**
+             * save it to the log
+             */
             self::error($errorString);
 
+            /**
+             * prepare stack trace
+             */
             $stackTrace = 'Stack trace:' . PHP_EOL . $exception->getTraceAsString();
 
+            /**
+             * save it to the log
+             */
             self::error($stackTrace);
 
+            /**
+             * output error information into the console
+             */
             self::line("SOMETHING WENT WRONG: $errorString", [BaseConsole::FG_RED]);
 
             self::newLine();
