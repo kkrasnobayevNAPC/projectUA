@@ -3,6 +3,8 @@
 class PasswordHelper
 {
     /**
+     * While the old variant of generatePassword did the job, I found it overcomplicated
+     * and simplified it while adding a value guard
      * @param int $length
      * @return string
      * @throws Exception
@@ -29,6 +31,9 @@ class PasswordHelper
     }
 
     /**
+     * According to the documentation password_verify is the best function to use, if password
+     * password_hash - which was initially the case
+     * was encrypted with
      * @param string $userPassword
      * @param string $databaseHash
      * @return bool
