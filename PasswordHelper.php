@@ -2,6 +2,7 @@
 
 class PasswordHelper
 {
+
     /**
      * While the old variant of generatePassword did the job, I found it overcomplicated
      * and simplified it while adding a value guard
@@ -12,8 +13,8 @@ class PasswordHelper
     public static function generatePassword(int $length = 8): string
     {
 
-        if ($length < 1) {
-            throw new Exception('$length must be more than 0');
+        if ($length < 2) {
+            throw new Exception('$length must be more than 1');
         }
 
         $chars = 'abcdfhjkmnrstvwzABCDFGJNQRSUVWXYZ123456789';
