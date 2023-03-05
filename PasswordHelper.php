@@ -44,4 +44,6 @@ class PasswordHelper
         return password_verify($userPassword, $databaseHash);
     }
 
+    //xxxxx
+
 }
