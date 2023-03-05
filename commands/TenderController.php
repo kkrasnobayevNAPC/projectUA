@@ -12,6 +12,9 @@ use yii\console\Controller;
 use yii\console\ExitCode;
 use yii\helpers\BaseConsole;
 
+/**
+ * COMMENT from NAPC
+ */
 class TenderController extends Controller
 {
 
